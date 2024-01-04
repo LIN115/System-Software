@@ -1,5 +1,5 @@
 # 打開檔案並讀取內容
-f = open('./Input.txt', 'r')
+f = open('./1.txt', 'r')
 Input = f.readlines()
 f.close()
 
