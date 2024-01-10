@@ -1,12 +1,16 @@
+# 導入 SIC_Instruction 模塊和 defaultdict
 import SIC_Instruction
 from collections import defaultdict
+
+# 函數：刪除註解
 def remove_comment(line: str) -> str:
-    # Removing comments
+    # 刪除註解
     for i in range(len(line)):
         if '.' in line[i]:
             return line[:i].strip()
     return line.strip()
 
+# 函數：處理 BYTE 指令
 def process_byte(thrd: str) -> tuple:
     mode, data = thrd[0], ""
 
@@ -19,6 +23,7 @@ def process_byte(thrd: str) -> tuple:
 
     return len(data) // 2, data
 
+# 函數：處理 WORD 指令
 def process_word(thrd: str) -> tuple:
     value, data = int(thrd), ""
 
@@ -30,16 +35,20 @@ def process_word(thrd: str) -> tuple:
 
     return len(data) // 2, data
 
+# 函數：處理 RESB 指令
 def process_resb(thrd: str) -> tuple:
     return int(thrd), ""
 
+# 函數：處理 RESW 指令
 def process_resw(thrd: str) -> tuple:
     return int(thrd) * 3, ""
 
+# 主組譯器函數
 def assembler() -> None:
     LOCATION, ADD = 0, 0
     RESULT, FUNC_LOC = [], defaultdict(int)
 
+    # 讀取輸入文件 "input.txt"
     with open("input.txt", "r", encoding="UTF-8") as inp:
         lines = inp.readlines()
 
@@ -51,6 +60,7 @@ def assembler() -> None:
                 continue
 
             if LOCATION == 0:
+                # 處理起始位置
                 if line.split()[-1] == "START":
                     print("ERROR START")
                     exit()
@@ -63,9 +73,11 @@ def assembler() -> None:
 
             else:
                 if len(line.split()) == 1:
+                    # 處理只有一個指令的情況
                     snd = line.split()[0]
                     obj_code = SIC_Instruction.instruction.get(snd, "ERROR") + "0000"
                 else:
+                    # 處理其他指令
                     tokens = line.split()
                     snd = tokens[0] if len(tokens) == 2 else tokens[1]
 
@@ -108,10 +120,11 @@ def assembler() -> None:
                     else:
                         RESULT[idx][4] = SIC_Instruction.instruction.get(RESULT[idx][2], "ERROR") + hex(FUNC_LOC[RESULT[idx][3]])[2:].upper()
 
+    # 將結果寫入輸出文件 "output.txt"
     with open("output.txt", "w", encoding="UTF-8") as fi:
         for i in range(len(RESULT)):
             fi.write(f"{(i + 1) * 5:<10}{RESULT[i][0].zfill(6):<10}{RESULT[i][1]:<10}{RESULT[i][2]:<10}{RESULT[i][3]:<10}{RESULT[i][4].zfill(6):<10}\n")
 
+# 如果腳本被直接運行，執行組譯器函數
 if __name__ == "__main__":
     assembler()
-
